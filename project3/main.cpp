@@ -100,6 +100,7 @@ void initialise()
             leftMostX + i * TILE_DIMENSION, 
             ORIGIN.y + 100 + TILE_DIMENSION
         });
+        gTiles[i].setEntityType(BLOCK);
     }
 
     gTarget.setTexture("assets/tile_0000.png");
@@ -116,7 +117,6 @@ void initialise()
     movingBlock.setColliderDimensions({TILE_DIMENSION / 2, TILE_DIMENSION / 2});
     movingBlock.setPosition({ORIGIN.x - 200.0f, ORIGIN.y}); 
     movingBlock.setEntityType(BLOCK);
-
 
     SetTargetFPS(FPS);
 }
@@ -189,8 +189,7 @@ void update()
             gTarget.deactivate();
             movingBlock.deactivate();
 
-        } else if (gCharacter->collidesWithType(&movingBlock) || 
-                   gCharacter->collidesWithType(gTiles)){
+        } else if (gCharacter->isCollidingBottom()){
             gGameStatus = LOST;
             gCharacter->deactivate();
             gTarget.deactivate();
