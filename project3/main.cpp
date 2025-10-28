@@ -35,8 +35,9 @@ float gPreviousTicks   = 0.0f,
 
 gameStatus gGameStatus = INPROGRESS;
 
-Entity *gXochitl = nullptr;
+Entity *gCharacter = nullptr;
 Entity *gTiles  = nullptr;
+Entity movingBlock = Entity();
 Entity gTarget = Entity();
 int fuel = 1000;
 
@@ -64,7 +65,7 @@ void initialise()
 
     float sizeRatio  = 48.0f / 64.0f;
 
-    gXochitl = new Entity(
+    gCharacter = new Entity(
         {ORIGIN.x, ORIGIN.y-100}, // position
         {70.0f, 70.0f},  // scale
         "assets/dash.png",        // texture file address
@@ -74,13 +75,13 @@ void initialise()
         PLAYER
     );
 
-    gXochitl->setEntityType(PLAYER);
-    gXochitl->setColliderDimensions({
-        gXochitl->getScale().x / 2.0f,
-        gXochitl->getScale().y / 2.0f
+    gCharacter->setEntityType(PLAYER);
+    gCharacter->setColliderDimensions({
+        gCharacter->getScale().x / 2.0f,
+        gCharacter->getScale().y / 2.0f
     });
 
-    gXochitl->setAcceleration({0.0f, ACCELERATION_G});
+    gCharacter->setAcceleration({0.0f, ACCELERATION_G});
 
     /*
         ----------- TILES -----------
@@ -107,6 +108,16 @@ void initialise()
     gTarget.setPosition({ORIGIN.x, ORIGIN.y + 50 + TILE_DIMENSION});
     gTarget.setEntityType(TARGET);
 
+    /*
+        ----------- MOVING BLOCK -----------
+    */
+    movingBlock.setTexture("assets/IndustrialTile_75.png"); 
+    movingBlock.setScale({TILE_DIMENSION / 2, TILE_DIMENSION / 2});
+    movingBlock.setColliderDimensions({TILE_DIMENSION / 2, TILE_DIMENSION / 2});
+    movingBlock.setPosition({ORIGIN.x - 200.0f, ORIGIN.y}); 
+    movingBlock.setEntityType(BLOCK);
+
+
     SetTargetFPS(FPS);
 }
 
@@ -114,41 +125,41 @@ void processInput()
 {
     if (IsKeyPressed(KEY_Q) || WindowShouldClose()) gAppStatus = TERMINATED;
     if (gGameStatus != INPROGRESS) return;
-    gXochitl->resetMovement();
-    Vector2 acc = gXochitl->getAcceleration();
+    gCharacter->resetMovement();
+    Vector2 acc = gCharacter->getAcceleration();
 
     // set acc for x directions
     if ((IsKeyDown(KEY_A) || IsKeyDown(KEY_LEFT)) && fuel > 0) {
-        gXochitl->setAcceleration({-1500, acc.y});
-        gXochitl->setDirection(LEFT);
+        gCharacter->setAcceleration({-1500, acc.y});
+        gCharacter->setDirection(LEFT);
         --fuel;
     }
     else if ((IsKeyDown(KEY_D) || IsKeyDown(KEY_RIGHT)) && fuel > 0) {
-        gXochitl->setAcceleration({1500, acc.y});
-        gXochitl->setDirection(RIGHT);
+        gCharacter->setAcceleration({1500, acc.y});
+        gCharacter->setDirection(RIGHT);
         --fuel;
     }
 
     // Get acceleration after modifying X
-    acc = gXochitl->getAcceleration();
+    acc = gCharacter->getAcceleration();
     
     if ((IsKeyDown(KEY_W) || IsKeyDown(KEY_UP)) && fuel > 0) {
-        gXochitl->setAcceleration({acc.x, -9.81f});
-        gXochitl->setDirection(UP);
+        gCharacter->setAcceleration({acc.x, -9.81f});
+        gCharacter->setDirection(UP);
         --fuel;
     }
     else {
-        gXochitl->setAcceleration({acc.x, ACCELERATION_G});
+        gCharacter->setAcceleration({acc.x, ACCELERATION_G});
     }
 
     if (!(IsKeyDown(KEY_A) || IsKeyDown(KEY_LEFT) || IsKeyDown(KEY_D) || IsKeyDown(KEY_RIGHT) || IsKeyDown(KEY_W) || IsKeyDown(KEY_UP))) {
-        gXochitl->setDirection(DOWN);
+        gCharacter->setDirection(DOWN);
     }
 
 
     // to avoid faster diagonal speed
-    if (GetLength(gXochitl->getMovement()) > 1.0f) 
-        gXochitl->normaliseMovement();
+    if (GetLength(gCharacter->getMovement()) > 1.0f) 
+        gCharacter->normaliseMovement();
 
 }
 
@@ -170,28 +181,40 @@ void update()
 
     while (deltaTime >= FIXED_TIMESTEP)
     {
-        gXochitl->update(FIXED_TIMESTEP, nullptr,nullptr, gTiles, NUMBER_OF_TILES);
+        gCharacter->update(FIXED_TIMESTEP, nullptr,nullptr, gTiles, NUMBER_OF_TILES);
 
-        if (gXochitl->collidesWithType(&gTarget)) {
+        if (gCharacter->collidesWithType(&gTarget)) {
             gGameStatus = WON;
-            gXochitl->deactivate();
+            gCharacter->deactivate();
             gTarget.deactivate();
-        } else if (gXochitl->isCollidingBottom()){
+            movingBlock.deactivate();
+
+        } else if (gCharacter->collidesWithType(&movingBlock) || 
+                   gCharacter->collidesWithType(gTiles)){
             gGameStatus = LOST;
-            gXochitl->deactivate();
+            gCharacter->deactivate();
             gTarget.deactivate();
+            movingBlock.deactivate();
         }
 
         // make sure character doesn't go off screen
-        Vector2 pos = gXochitl->getPosition();
+        Vector2 pos = gCharacter->getPosition();
         if (pos.x < 0) pos.x = 0;
         if (pos.x > SCREEN_WIDTH) pos.x = SCREEN_WIDTH;
         if (pos.y < 0) pos.y = 0;
         if (pos.y > SCREEN_HEIGHT) pos.y = SCREEN_HEIGHT;
-        gXochitl->setPosition(pos);
+        gCharacter->setPosition(pos);
 
         deltaTime -= FIXED_TIMESTEP;
     }
+
+    static float moveTimer = 0.0f;
+    moveTimer += FIXED_TIMESTEP;
+    float speed = 100.0f;
+    float amplitude = 200.0f;
+    float offset = sin(moveTimer) * amplitude;
+    movingBlock.setPosition({ORIGIN.x + offset, ORIGIN.y});
+
 }
 
 void render()
@@ -217,8 +240,9 @@ void render()
         const char* text = "Mission Accomplished";
         DrawText(text, 140, ORIGIN.y-35, 70, RAYWHITE);
     }
-    gXochitl->render();
+    gCharacter->render();
     gTarget.render();
+    movingBlock.render();
 
     EndDrawing();
 }
