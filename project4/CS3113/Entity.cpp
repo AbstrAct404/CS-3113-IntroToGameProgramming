@@ -364,7 +364,6 @@ void Entity::update(float deltaTime, Entity *player, Map *map,
 
         float distance = sqrt(direction.x*direction.x + direction.y*direction.y);
 
-        // 到达目标 → 停止移动
         if (distance < 1.0f)
         {
             moveSpeed = 0.0f;
@@ -372,11 +371,9 @@ void Entity::update(float deltaTime, Entity *player, Map *map,
         }
         else
         {
-            // 归一化方向
             direction.x /= distance;
             direction.y /= distance;
 
-            // 按 moveSpeed 移动
             mPosition.x += direction.x * moveSpeed * deltaTime;
             mPosition.y += direction.y * moveSpeed * deltaTime;
         }
