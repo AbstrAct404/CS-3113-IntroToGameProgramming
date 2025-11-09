@@ -354,27 +354,7 @@ void Entity::update(float deltaTime, Entity *player, Map *map,
             animate(deltaTime);
     }
 
-    if(isMoving){
-        Vector2 pos = mPosition;
-        
-        Vector2 dir = {
-            moveTarget.x - pos.x,
-            moveTarget.y - pos.y
-        };
 
-        if (fabs(dir.x) < 1.0f && fabs(dir.y) < 1.0f) {
-            mPosition = moveTarget;
-            isMoving = false;
-        } 
-        else {
-            float length = sqrt(dir.x * dir.x + dir.y * dir.y);
-            dir.x /= length;
-            dir.y /= length;
-
-            mPosition.x += dir.x * moveSpeed * deltaTime;
-            mPosition.y += dir.y * moveSpeed * deltaTime;
-        }
-    }
 }
 
 void Entity::render()
@@ -456,7 +436,8 @@ void Entity::displayCollider()
 }
 
 void Entity::moveTo(Vector2 target, float speed){
-        moveTarget = target;
-        moveSpeed = speed;
-        isMoving = true;
+    if (!mCanMoveTo) return;
+    moveTarget = target;
+    moveSpeed = speed;
+    isMoving = true;
 }

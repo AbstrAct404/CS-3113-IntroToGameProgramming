@@ -9,7 +9,7 @@ LevelA::~LevelA() {}
 void LevelA::initialise()
 {
    Scene::initialise();
-   mGameState.nextSceneID = 0;
+   mGameState.nextSceneID = -1;
 
    /*
       ----------- MAP -----------
