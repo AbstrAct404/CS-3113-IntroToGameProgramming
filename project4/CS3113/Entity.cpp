@@ -354,7 +354,33 @@ void Entity::update(float deltaTime, Entity *player, Map *map,
             animate(deltaTime);
     }
 
+    // ---- MOVE TOWARD TARGET IF moveTo WAS SET ---- //
+    if (moveSpeed > 0.0f)
+    {
+        Vector2 direction = {
+            moveTarget.x - mPosition.x,
+            moveTarget.y - mPosition.y
+        };
 
+        float distance = sqrt(direction.x*direction.x + direction.y*direction.y);
+
+        // 到达目标 → 停止移动
+        if (distance < 1.0f)
+        {
+            moveSpeed = 0.0f;
+            mVelocity = {0,0};
+        }
+        else
+        {
+            // 归一化方向
+            direction.x /= distance;
+            direction.y /= distance;
+
+            // 按 moveSpeed 移动
+            mPosition.x += direction.x * moveSpeed * deltaTime;
+            mPosition.y += direction.y * moveSpeed * deltaTime;
+        }
+    }
 }
 
 void Entity::render()
@@ -436,8 +462,6 @@ void Entity::displayCollider()
 }
 
 void Entity::moveTo(Vector2 target, float speed){
-    if (!mCanMoveTo) return;
     moveTarget = target;
     moveSpeed = speed;
-    isMoving = true;
 }

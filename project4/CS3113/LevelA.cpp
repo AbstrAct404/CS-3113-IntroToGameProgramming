@@ -61,7 +61,7 @@ void LevelA::initialise()
 
 
    Entity* trap1 = new Entity {
-      {mOrigin.x - 9.5f*TILE_DIMENSION, 3*TILE_DIMENSION},
+      {mOrigin.x - 10.5f*TILE_DIMENSION, 3*TILE_DIMENSION},
       {TILE_DIMENSION, TILE_DIMENSION},
       "assets/trap.png",
       BLOCK
@@ -152,9 +152,9 @@ void LevelA::initialise()
       apple->render();
       mGameState.collidableEntities.push_back(apple);
   }
-  mGameState.collidableEntities[7]->setPosition({mOrigin.x - 10*TILE_DIMENSION , 0});
-  mGameState.collidableEntities[8]->setPosition({mOrigin.x + 9*TILE_DIMENSION , 3*TILE_DIMENSION});
-  mGameState.collidableEntities[9]->setPosition({mOrigin.x + 5*TILE_DIMENSION , 1*TILE_DIMENSION});
+  mGameState.collidableEntities[7]->setPosition({mOrigin.x - 11*TILE_DIMENSION , 0});
+  mGameState.collidableEntities[8]->setPosition({mOrigin.x + 8*TILE_DIMENSION , 3*TILE_DIMENSION});
+  mGameState.collidableEntities[9]->setPosition({mOrigin.x + 4*TILE_DIMENSION , 1*TILE_DIMENSION});
    
   //create follower NPCs
   std::map<Direction, std::vector<int>> followerAnimationAtlas = {
@@ -244,7 +244,7 @@ void LevelA::update(float deltaTime)
 
    for (size_t i = 2; i < mGameState.collidableEntities.size(); ++i) {
       if (mGameState.xochitl->getEntityState() == ATTACK) {
-         if(i==3 || i==4 || i==10 || i==11) continue;
+         if(i==3 || i==4 || i==7 || i==10 || i==11) continue;
          Vector2 playerPos = mGameState.xochitl->getPosition();
          Vector2 npc = mGameState.collidableEntities[i]->getPosition();
          if (((playerPos.x - npc.x) < 50 && (playerPos.x - npc.x) > 0 && mGameState.xochitl->getDirection() == LEFT)

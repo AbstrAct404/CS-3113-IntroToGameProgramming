@@ -76,7 +76,7 @@ void LevelB::initialise()
    };
 
    Entity* trap1 = new Entity {
-      {mOrigin.x - 12.5f*TILE_DIMENSION, 7*TILE_DIMENSION+20},
+      {mOrigin.x - 12.5f*TILE_DIMENSION, 7*TILE_DIMENSION+10},
       {TILE_DIMENSION, TILE_DIMENSION},
       "assets/trap.png",
       BLOCK
@@ -265,7 +265,7 @@ void LevelB::update(float deltaTime)
 
    for (size_t i = 2; i < mGameState.collidableEntities.size(); ++i) {
       if (mGameState.xochitl->getEntityState() == ATTACK) {
-         if(i==3 || i==4 || i==11 || i==12 || i==13) continue;
+         if(i==3 || i==4 || i==7 || i==11 || i==12 || i==13) continue;
          if(mGameState.collidableEntities[11]->isActive()){
             mGameState.collidableEntities[11]->deactivate();
          }
@@ -279,6 +279,7 @@ void LevelB::update(float deltaTime)
       else if (mGameState.xochitl->getCollidedObject() == mGameState.collidableEntities[i]) {
          if(i == 11 || i == 12 || i==13) continue;
          --lives;
+         printf("Player collides with obj%d\n", i);
          if (lives > 0) mGameState.nextSceneID = 1;
          else mGameState.nextSceneID = 4;
       }
@@ -310,8 +311,9 @@ void LevelB::update(float deltaTime)
          mGameState.collidableEntities[2]->getPosition().x + 6*TILE_DIMENSION,
          mGameState.collidableEntities[2]->getPosition().y
       };
-
+      printf("Obj2 is moving!");
       mGameState.collidableEntities[2]->moveTo(target, 480.0f);
+      printf("Obj2 moving completed");
 
       Vector2 target2 = {
          mGameState.collidableEntities[3]->getPosition().x - 12*TILE_DIMENSION,

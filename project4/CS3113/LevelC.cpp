@@ -215,6 +215,22 @@ void LevelC::initialise()
 
    mGameState.collidableEntities.push_back(block);
 
+   Entity* trap4 = new Entity {
+      {mOrigin.x + 6.0f*TILE_DIMENSION, 8*TILE_DIMENSION},
+      {TILE_DIMENSION, TILE_DIMENSION},
+      "assets/trap.png",
+      BLOCK
+   }; 
+   Entity* trap5 = new Entity {
+      {mOrigin.x + 8.5f*TILE_DIMENSION, 8*TILE_DIMENSION},
+      {TILE_DIMENSION, TILE_DIMENSION},
+      "assets/trap.png",
+      BLOCK
+   };
+
+   mGameState.collidableEntities.push_back(trap4);
+   mGameState.collidableEntities.push_back(trap5);
+
    int currLives = lives;
    for (int i = 0; i < 3; ++i) {
       if (currLives > 0) {
@@ -265,6 +281,11 @@ void LevelC::update(float deltaTime)
                mGameState.collidableEntities[1]->getPosition().y+20
             };
             mGameState.collidableEntities[4]->moveTo(target, 360.0f);
+            Vector2 target1 = {
+               mGameState.collidableEntities[15]->getPosition().x+TILE_DIMENSION,
+               mGameState.collidableEntities[15]->getPosition().y
+            };
+            mGameState.collidableEntities[15]->moveTo(target, 360.0f);
    }
 
    for (size_t i = 2; i < mGameState.collidableEntities.size(); ++i) {

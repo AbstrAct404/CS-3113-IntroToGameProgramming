@@ -52,6 +52,8 @@ private:
     bool mIsCollidingBottom = false;
     bool mIsCollidingRight  = false;
     bool mIsCollidingLeft   = false;
+    bool ignoreMapCollision = false;
+
 
     Entity* mCollidedObject = nullptr;
 
@@ -89,8 +91,6 @@ public:
     static constexpr int   DEFAULT_SPEED         = 200;
     static constexpr int   DEFAULT_FRAME_SPEED   = 14;
     static constexpr float Y_COLLISION_THRESHOLD = 0.5f;
-
-    bool mCanMoveTo = false;
 
     Entity();
     Entity(Vector2 position, Vector2 scale, const char *textureFilepath, 
