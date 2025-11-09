@@ -239,7 +239,6 @@ void LevelB::initialise()
 
 void LevelB::update(float deltaTime)
 {
-  
    mGameState.xochitl->update(
       deltaTime,      // delta time / fixed timestep
       nullptr,        // player
@@ -298,7 +297,7 @@ void LevelB::update(float deltaTime)
 
    if (mGameState.xochitl->getPosition().y > 800.0f) {
       --lives;
-      if (lives > 0) mGameState.nextSceneID = 0;
+      if (lives > 0) mGameState.nextSceneID = 1;
       else mGameState.nextSceneID = 4;
    }
    if (mGameState.xochitl->getCollidedObject() == mGameState.collidableEntities[1]) {

@@ -84,7 +84,7 @@ void Entity::checkCollisionX(std::vector<Entity*> collidableEntities)
             mCollidedObject = collidableEntity;
             
             // Skip physical collision resolution for NPCs (pass through them)
-            if (collidableEntity->mEntityType == NPC) continue;
+            if (collidableEntity->mEntityType == NPC || collidableEntity->mEntityType == NPC) continue;
             
             // When standing on a platform, we're always slightly overlapping
             // it vertically due to gravity, which causes false horizontal

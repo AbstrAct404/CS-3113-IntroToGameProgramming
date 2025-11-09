@@ -248,7 +248,6 @@ void LevelC::initialise()
 
 void LevelC::update(float deltaTime)
 {
-  
    mGameState.xochitl->update(
       deltaTime,      // delta time / fixed timestep
       nullptr,        // player
