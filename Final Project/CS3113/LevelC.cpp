@@ -859,8 +859,25 @@ void LevelC::update(float deltaTime)
    if (canLevelUp())
    {
       doLevelUp();
-      PlaySound(gUpgradeSound); // Play upgrade sound effect
-      openLevelUpMenu();
+      PlaySound(gUpgradeSound);
+      
+      // If Heaven Laser is unlocked, automatically add HP instead of showing menu
+      if (gHasHeavenLaser)
+      {
+         mWeaponUpgrades.playerMaxHP += 10;
+         if (mGameState.xochitl)
+         {
+            mGameState.xochitl->setMaxHP(mWeaponUpgrades.playerMaxHP);
+            int newHP = mGameState.xochitl->getHP() + 10;
+            if (newHP > mWeaponUpgrades.playerMaxHP)
+               newHP = mWeaponUpgrades.playerMaxHP;
+            mGameState.xochitl->setCurrentHP(newHP);
+         }
+      }
+      else
+      {
+         openLevelUpMenu();
+      }
    }
 
    // Clean up experience records of deleted enemies
@@ -2112,20 +2129,6 @@ void LevelC::openLevelUpMenu()
    // Use a pool to temporarily store all available options
    std::vector<LevelUpOption> pool;
 
-   // If Heaven Laser is already obtained, only show +10 HP option
-   if (gHasHeavenLaser)
-   {
-      LevelUpOption opt;
-      opt.title = "MAX HP +10";
-      opt.description = TextFormat("Increase max HP by 10. (Current: %d)", mWeaponUpgrades.playerMaxHP);
-      opt.upgradeId = 17; // New ID for HP upgrade
-      pool.push_back(opt);
-      
-      // Randomly select (just this one option)
-      mLevelUpOptionCount = 1;
-      mLevelUpOptions[0] = opt;
-      return;
-   }
 
    // 1) Unlockable weapons that haven't been unlocked yet
    if (!gHasSword)
